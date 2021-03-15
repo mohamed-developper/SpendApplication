@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="tn.org.spendapplication.MainActivity">
+
+    <item
+        android:id="@+id/toggle_nigh_mode"
+        android:icon="@drawable/ic_light_mode"
+        android:title="dark mode"
+        app:showAsAction="always" />
+</menu>
