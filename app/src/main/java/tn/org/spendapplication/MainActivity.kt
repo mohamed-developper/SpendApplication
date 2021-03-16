@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         val fab = findViewById<FloatingActionButton>(R.id.fab)
 
         fab.setOnClickListener {
-            val intent = Intent(this@MainActivity, AddTranscationActivity::class.java)
+            val intent = Intent(this@MainActivity, FormActivity::class.java)
             startActivity(intent)
         }
 

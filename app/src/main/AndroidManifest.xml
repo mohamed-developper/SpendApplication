@@ -9,21 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SpendApplication">
-        <activity android:name=".AddTranscationActivity">
-
+        <activity android:name=".RecyclerViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".AllViewsActivity" />
+        <activity android:name=".FormActivity">
 
         </activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.SpendApplication.NoActionBar">
-
-        </activity>
+            android:theme="@style/Theme.SpendApplication.NoActionBar" />
 
         <meta-data
             android:name="preloaded_fonts"
