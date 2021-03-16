@@ -9,7 +9,10 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 
 class AddTranscationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +65,42 @@ class AddTranscationActivity : AppCompatActivity() {
             }
         }
         //END Real time testing
+
+        // Time Picker
+        val timePickerButton = findViewById<Button>(R.id.time_pick)
+        timePickerButton.setOnClickListener {
+            val picker =
+                MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setHour(12)
+                    .setMinute(10)
+                    .setTitleText("My Picker")
+                    .build()
+
+            picker.addOnPositiveButtonClickListener {
+                timePickerButton.text = "${picker.hour} : ${picker.minute}"
+            }
+
+            picker.show(supportFragmentManager, "TIME_PICKER")
+        }
+        // END time Picker
+
+        // Date Picker
+        val datePickerButton = findViewById<Button>(R.id.date_pick)
+        datePickerButton.setOnClickListener {
+            val picker =
+                MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Pick Your date")
+                    .build()
+
+            picker.addOnPositiveButtonClickListener {
+                datePickerButton.text = picker.headerText
+            }
+
+            picker.show(supportFragmentManager, "DATE_PICKER")
+        }
+        // END Date Picker
+
 
     }
 }
