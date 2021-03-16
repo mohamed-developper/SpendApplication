@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 class PokemonAdapter(private val list: List<Pokemon>) :
     RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder>() {
@@ -32,9 +33,9 @@ class PokemonAdapter(private val list: List<Pokemon>) :
 
         fun bind(pokemon: Pokemon) {
             title.text = pokemon.name
-            description.text = pokemon.description
+            description.text = pokemon.xdescription
             Glide.with(image)
-                .load(pokemon.image)
+                .load(pokemon.imageurl)
                 .placeholder(R.drawable.ic_cloud_download)
                 .error(R.drawable.ic_error_outline)
                 .circleCrop()

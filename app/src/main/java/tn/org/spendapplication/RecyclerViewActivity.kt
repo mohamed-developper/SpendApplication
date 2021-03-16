@@ -2,16 +2,54 @@ package tn.org.spendapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import tn.org.spendapplication.network.PokemonAPI
+import tn.org.spendapplication.network.PokemonModel
 
 class RecyclerViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recycler_view)
 
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://gist.githubusercontent.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofit.create(PokemonAPI::class.java).getAllPokemons().enqueue(
+            object : Callback<PokemonModel> {
+                override fun onResponse(
+                    call: Call<PokemonModel>,
+                    response: Response<PokemonModel>
+                ) {
+
+                    if (response.isSuccessful) {
+                        val pokemonList = response.body()!!.map {
+                            Pokemon(it.name, it.xdescription, it.imageurl)
+                        }
+                        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
+                        val pokemonAdapter = PokemonAdapter(pokemonList)
+                        recyclerView.layoutManager = LinearLayoutManager(this@RecyclerViewActivity)
+                        recyclerView.adapter = pokemonAdapter
+                    }
+                }
+
+                override fun onFailure(call: Call<PokemonModel>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+
+            }
+        )
+        /*
         val pokemonList = listOf(
             Pokemon(
                 "Charmander",
@@ -29,9 +67,8 @@ class RecyclerViewActivity : AppCompatActivity() {
                 "https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png"
             )
         )
-        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
-        val pokemonAdapter = PokemonAdapter(pokemonList)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = pokemonAdapter
+
+         */
+
     }
 }
