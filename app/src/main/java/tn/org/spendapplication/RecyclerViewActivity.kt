@@ -3,10 +3,7 @@ package tn.org.spendapplication
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,8 +14,16 @@ import tn.org.spendapplication.network.PokemonModel
 
 class RecyclerViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recycler_view)
+
+        val pokemonList = mutableListOf<Pokemon>()
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
+        val pokemonAdapter = PokemonAdapter(pokemonList)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = pokemonAdapter
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://gist.githubusercontent.com/")
@@ -33,13 +38,16 @@ class RecyclerViewActivity : AppCompatActivity() {
                 ) {
 
                     if (response.isSuccessful) {
-                        val pokemonList = response.body()!!.map {
-                            Pokemon(it.name, it.xdescription, it.imageurl)
-                        }
-                        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
-                        val pokemonAdapter = PokemonAdapter(pokemonList)
-                        recyclerView.layoutManager = LinearLayoutManager(this@RecyclerViewActivity)
-                        recyclerView.adapter = pokemonAdapter
+                        val newList = response.body()!!
+                            //.filter { it.attack > 50 }
+                            .map {
+                                Pokemon(it.name, it.xdescription, it.imageurl)
+                            }.sortedBy {
+                                it.name
+                            }
+
+                        pokemonList.addAll(newList)
+                        pokemonAdapter.notifyDataSetChanged()
                     }
                 }
 
@@ -67,8 +75,37 @@ class RecyclerViewActivity : AppCompatActivity() {
                 "https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png"
             )
         )
-
          */
 
+
+        val touchlistener = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+
+                val newPosition = target.adapterPosition
+                val oldPosition = viewHolder.adapterPosition
+
+                pokemonList.add(newPosition, pokemonList[oldPosition])
+                pokemonList.removeAt(oldPosition)
+                pokemonAdapter.notifyItemMoved(oldPosition, newPosition)
+
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                pokemonList.removeAt(position)
+                pokemonAdapter.notifyItemRemoved(position)
+
+            }
+        }
+
+        ItemTouchHelper(touchlistener).attachToRecyclerView(recyclerView)
     }
 }
