@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.*
+import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,6 +23,13 @@ class RecyclerViewActivity : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         val pokemonAdapter = PokemonAdapter(pokemonList)
+
+        pokemonAdapter.pokemonClickListener = object : PokemonAdapter.PokemonClickListener {
+            override fun onPokemonClicked(pokemon: Pokemon) {
+                Snackbar.make(recyclerView, pokemon.name, Snackbar.LENGTH_LONG).show()
+            }
+        }
+
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = pokemonAdapter
 
@@ -102,7 +110,6 @@ class RecyclerViewActivity : AppCompatActivity() {
                 val position = viewHolder.adapterPosition
                 pokemonList.removeAt(position)
                 pokemonAdapter.notifyItemRemoved(position)
-
             }
         }
 

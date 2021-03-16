@@ -12,6 +12,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 class PokemonAdapter(private val list: List<Pokemon>) :
     RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder>() {
 
+    lateinit var pokemonClickListener: PokemonClickListener
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_layout, parent, false)
@@ -21,6 +23,9 @@ class PokemonAdapter(private val list: List<Pokemon>) :
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
         val item = list[position]
         holder.bind(item)
+        holder.itemView.setOnClickListener {
+            pokemonClickListener.onPokemonClicked(item)
+        }
     }
 
     override fun getItemCount() = list.size
@@ -32,6 +37,7 @@ class PokemonAdapter(private val list: List<Pokemon>) :
         private var image: ImageView = view.findViewById(R.id.image)
 
         fun bind(pokemon: Pokemon) {
+
             title.text = pokemon.name
             description.text = pokemon.xdescription
             Glide.with(image)
@@ -41,5 +47,9 @@ class PokemonAdapter(private val list: List<Pokemon>) :
                 .circleCrop()
                 .into(image)
         }
+    }
+
+    interface PokemonClickListener {
+        fun onPokemonClicked(pokemon: Pokemon)
     }
 }
