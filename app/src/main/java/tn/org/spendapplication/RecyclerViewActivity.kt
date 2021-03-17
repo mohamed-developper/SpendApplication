@@ -5,11 +5,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.*
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import tn.org.spendapplication.local.PokemonDatabase
 import tn.org.spendapplication.network.PokemonAPI
 import tn.org.spendapplication.network.PokemonModel
 
@@ -49,20 +53,37 @@ class RecyclerViewActivity : AppCompatActivity() {
                         val newList = response.body()!!
                             //.filter { it.attack > 50 }
                             .map {
-                                Pokemon(it.name, it.xdescription, it.imageurl)
+                                Pokemon(
+                                    name = it.name,
+                                    xdescription = it.xdescription,
+                                    imageurl = it.imageurl
+                                )
                             }.sortedBy {
                                 it.name
                             }
-
+                        Log.e("TAG", "onResponse: START THREAD")
+                        GlobalScope.launch {
+                            Log.e("TAG", "onResponse: START INSERTION")
+                            PokemonDatabase.getInstance(this@RecyclerViewActivity)
+                                .getPokemonDao()
+                                .insertAllPokemon(newList)
+                            Log.e("TAG", "onResponse: END INSERTION")
+                        }
+                        Log.e("TAG", "onResponse: END THREAD")
                         pokemonList.addAll(newList)
                         pokemonAdapter.notifyDataSetChanged()
                     }
                 }
 
                 override fun onFailure(call: Call<PokemonModel>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    GlobalScope.launch(Dispatchers.Main) {
+                        val newList = PokemonDatabase.getInstance(this@RecyclerViewActivity)
+                            .getPokemonDao()
+                            .getAllPokemons()
+                        pokemonList.addAll(newList)
+                        pokemonAdapter.notifyDataSetChanged()
+                    }
                 }
-
             }
         )
         /*
