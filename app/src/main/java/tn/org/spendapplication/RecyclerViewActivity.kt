@@ -1,12 +1,17 @@
 package tn.org.spendapplication
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.recyclerview.widget.*
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,8 +19,11 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import tn.org.spendapplication.local.PokemonDatabase
+import tn.org.spendapplication.local.ThemePreferences
 import tn.org.spendapplication.network.PokemonAPI
 import tn.org.spendapplication.network.PokemonModel
+
+
 
 class RecyclerViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,12 +33,23 @@ class RecyclerViewActivity : AppCompatActivity() {
 
         val pokemonList = mutableListOf<Pokemon>()
 
+
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         val pokemonAdapter = PokemonAdapter(pokemonList)
 
         pokemonAdapter.pokemonClickListener = object : PokemonAdapter.PokemonClickListener {
             override fun onPokemonClicked(pokemon: Pokemon) {
                 Snackbar.make(recyclerView, pokemon.name, Snackbar.LENGTH_LONG).show()
+            }
+        }
+
+        val theme = ThemePreferences(this@RecyclerViewActivity)
+
+        GlobalScope.launch {
+            theme.updateValue(true)
+
+            theme.themeValue().collect {
+                Log.e("TAG", "onCreate: Theme Changed $it")
             }
         }
 
